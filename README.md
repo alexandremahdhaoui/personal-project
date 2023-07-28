@@ -8,7 +8,7 @@ and status.
 
 ## Cloud
 
-- [ ] [Bare metal provisioning](./cloud/bare-metal-provisioning.md)
+- [ ] [Bare metal provisioning](bare-metal-provisionning/README.md)
 - [ ] [Networking](./cloud/networking.md): figuring out isolation (VPC), and multi-AZ, -datacenter, -nodes setup...
 - [ ] [Managed Kubernetes](./cloud/managed-kubernetes.md): (using cluster-api, kubeadm)
   - [ ] control plane

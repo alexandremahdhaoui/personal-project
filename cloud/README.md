@@ -1,6 +1,6 @@
 # cloud
 
-- [ ] [Bare metal provisioning](bare-metal-provisioning.md)
+- [ ] [Bare metal provisioning](../bare-metal-provisionning/README.md)
 - [ ] [Networking](networking.md): figuring out isolation (VPC), and multi-AZ, -datacenter, -nodes setup...
 - [ ] [Managed Kubernetes](managed-kubernetes.md): (using cluster-api, kubeadm)
     - [ ] control plane
