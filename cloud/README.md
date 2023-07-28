@@ -14,3 +14,4 @@
     - [ ] Logging (Grafana's stack, or Elastic?)
     - [ ] Tracing (OTLP...)
 - [ ] [Managed Secrets](managed-secret.md)
+- [ ] [Managed CI/CD](managed-ci-cd.md)
