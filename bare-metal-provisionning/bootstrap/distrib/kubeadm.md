@@ -34,5 +34,6 @@ List of binaries:
 - runc
 
 ```shell
-
+URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisionning/bootstrap/build/worker_node.sh"
+curl -sfL "${URL}" | sh -
 ```
