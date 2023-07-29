@@ -1,10 +1,10 @@
-# Bootstrapping Bare Metal provisionning
+# Bootstrapping Bare Metal provisioning
 
 ## Prepare your system
 
 ```shell
 dnf upgrade --refresh -y
-echo -e 'set -o vi\nalias k="kubectl"\nalias kg="k get"\nalias kd="k describe"' | tee -a /etc/bashrc
+echo -e 'set -o vi\nalias k="kubectl"\nalias kg="k get"\nalias kd="k describe"\nalias kl="k logs"' | tee -a /etc/bashrc
 . /etc/bashrc
 ```
 
@@ -12,18 +12,26 @@ echo -e 'set -o vi\nalias k="kubectl"\nalias kg="k get"\nalias kd="k describe"' 
 
 [Follow this link](./fedora-system-upgrade.md)
 
-## Boostrap kubernetes management cluster
+## Boostrap a k8s management cluster
 
-```shell 
-#### Install k3s without flannel
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s -
+- [Bootstrapping a k0s cluster](k0s.md)
+- [Bootstrapping a k3s cluster (unstable)](k3s.md)
 
-#### Install CNI plugin
-# https://github.com/k8snetworkplumbingwg/multus-cni/blob/master/docs/quickstart.md
-# https://gist.github.com/janeczku/ab5139791f28bfba1e0e03cfc2963ecf
-URL=""
-curl -s "${URL}" | kubectl apply -f -
+### Post-installation
 
+1. [Install dhcp CNI Plugin](cni-dhcp.md)
+
+2. [Test Multus after k8s cluster installation](test-multus.yml)
+
+```shell
+kubectl apply -f 
+# Cleanup
+kubectl delete networkattachmentdefinition.k8s.cni.cncf.io/test pod/test
+```
+
+### Install Kubevirt
+
+```shell
 #### Install Kubevirt
 # Point at latest release
 export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)
@@ -48,9 +56,6 @@ kubectl -n kubevirt wait kv kubevirt --for condition=Available
 )
 . /etc/bashrc
 # Install virtctl
-kubectl krew install virt
-
-wget "https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/virtctl-${RELEASE}-linux-amd64"
-chmod 755 "virtctl-${RELEASE}-linux-amd64"
-mv "virtctl-${RELEASE}-linux-amd64" /usr/local/bin/virtctl
+k krew install virt
 ```
+
