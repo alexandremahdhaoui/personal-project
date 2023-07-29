@@ -8,4 +8,4 @@ DEST="/opt/cni/bin"
 URL="https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-${ARCH}-${CNI_PLUGINS_VERSION}.tgz"
 
 sudo mkdir -p "${DEST}"
-curl -L "${URL}" | sudo tar -C "${DEST}" -xz
+curl -sL "${URL}" | sudo tar -C "${DEST}" -xz

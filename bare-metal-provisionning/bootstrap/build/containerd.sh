@@ -8,7 +8,7 @@ REPO="https://github.com/containerd/containerd.git"
 RELEASE=$(git ls-remote "${REPO}" | grep "v1\.[0-9]*\.[0-9]*$" | sed 's/.*tags\///' | sort | tail -n 1)
 URL="https://github.com/containerd/containerd/releases/download/${RELEASE}/containerd-${RELEASE//v}-linux-${ARCH}.tar.gz"
 DOWNLOAD_DIR="/usr/local"
-curl -L "${URL}" | sudo tar -Cxvzf "${DOWNLOAD_DIR}"
+curl -sL "${URL}" | sudo tar -Cxvzf "${DOWNLOAD_DIR}"
 
 ## Post-install
 CONTAINERD_SERVICE_DEST_PATH="/usr/lib/systemd/system/containerd.service"

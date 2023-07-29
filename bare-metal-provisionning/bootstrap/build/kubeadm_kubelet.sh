@@ -7,7 +7,7 @@ RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
 ARCH="amd64"
 
 cd "${DOWNLOAD_DIR}" || exit 1
-sudo curl -L --remote-name-all "https://dl.k8s.io/release/${RELEASE}/bin/linux/${ARCH}/{kubeadm,kubelet}"
+sudo curl -sL --remote-name-all "https://dl.k8s.io/release/${RELEASE}/bin/linux/${ARCH}/{kubeadm,kubelet}"
 sudo chmod +x {kubeadm,kubelet}
 
 RELEASE_VERSION="v0.15.1"
