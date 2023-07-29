@@ -29,6 +29,7 @@ mkdir -p /etc/containerd
 containerd config default \
   | yj -t \
   | jq '.plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options.SystemdCgroup = true' \
+  | jq '.plugins."io.containerd.internal.v1.tracing".sampling_ratio = 1.0' \
   | yj -jt \
   | tee /etc/containerd/config.toml
 # Restart containerd
