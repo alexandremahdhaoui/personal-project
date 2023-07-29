@@ -25,5 +25,6 @@ metadata:
 spec:
   containers:
   - name: test
-    command: ["/bin/ash", "-c", "trap : TERM INT; sleep infinity & wait"]
-    image: alpine
+    image: hashicorp/http-echo
+    ports:
+      - containerPort: 5678
