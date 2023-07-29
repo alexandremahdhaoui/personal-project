@@ -24,7 +24,7 @@ echo -e 'set -o vi\nalias k="kubectl"\nalias kg="k get"\nalias kd="k describe"\n
 2. [Test Multus after k8s cluster installation](test-multus.yml)
 
 ```shell
-kubectl create -f https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisionning/bootstrap/test-multus.yml?token=GHSAT0AAAAAACFRSD72EV3X2RLC7ETQU3PKZGE7WFQ
+kubectl create -f https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisionning/bootstrap/test-multus.yml?token=GHSAT0AAAAAACFRSD73FNI3W6FDTLARLHLEZGFBFFQ
 # Cleanup
 kubectl delete networkattachmentdefinition.k8s.cni.cncf.io/test pod/test
 ```
