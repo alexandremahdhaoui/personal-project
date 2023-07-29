@@ -35,5 +35,5 @@ List of binaries:
 
 ```shell
 URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisionning/bootstrap/build/worker_node.sh"
-curl -sfL "${URL}" | sh -
+curl -sfL "${URL}" | sh -xe -
 ```
