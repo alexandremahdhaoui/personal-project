@@ -7,7 +7,7 @@ curl -sSLf https://get.k0s.sh | sh
 k0s install controller --single
 k0s start
 
-alias kubectl=k0s\ kubectl
+sudo ln -s "/usr/local/bin/k0s" /usr/local/bin/kubectl
 ```
 
 ## Install Multus
