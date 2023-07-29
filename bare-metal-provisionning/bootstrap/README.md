@@ -11,7 +11,9 @@ echo -e 'set -o vi\nalias k="kubectl"\nalias kg="k get"\nalias kd="k describe"\n
 ## Disable SELinux
 
 ```shell
-grubby --update-kernel=ALL --args 'selinux=0 intel_iommu=on iommu=pt rd.driver.pre=vfio-pci pci=realloc'
+# Set SELinux in permissive mode (effectively disabling it)
+sudo setenforce 0
+sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 ```
 
 ## Optional: Upgrade your system
@@ -26,9 +28,9 @@ dnf install -y container-selinux libvirt
 
 ## Boostrap a k8s management cluster
 
+- [Bootsrapping with kubeadm](distrib/kubeadm.md)
 - [Bootstrapping a k0s cluster](distrib/k0s.md)
 - [Bootstrapping a k3s cluster (unstable)](distrib/k3s.md)
-- [Bootsrapping with Kubeadm](distrib/kubeadm.md)
 
 ### Post-installation
 
