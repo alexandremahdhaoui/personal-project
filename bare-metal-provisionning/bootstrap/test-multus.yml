@@ -25,6 +25,6 @@ metadata:
 spec:
   containers:
   - name: test
-    image: hashicorp/http-echo:latest
+    image: ealen/echo-server:latest
     ports:
-      - containerPort: 5678
+      - containerPort: 80
