@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 CNI_DHCP_SCRIPT="/usr/local/bin/cni-dhcp"
 cat <<EOF | tee "${CNI_DHCP_SCRIPT}"
 #!/bin/bash

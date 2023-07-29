@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 DOWNLOAD_DIR="/usr/local/bin"
 RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
 ARCH="amd64"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 RELEASE=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 
 curl -LO "https://dl.k8s.io/release/${RELEASE}/bin/linux/amd64/kubectl"

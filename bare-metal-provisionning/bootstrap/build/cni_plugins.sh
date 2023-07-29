@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 CNI_PLUGINS_VERSION="v1.3.0"
 ARCH="amd64"
 DEST="/opt/cni/bin"

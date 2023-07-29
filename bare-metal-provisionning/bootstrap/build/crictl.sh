@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 ARCH="amd64"
 CRICTL_VERSION="v1.27.1"
 DOWNLOAD_DIR="/usr/local/bin"

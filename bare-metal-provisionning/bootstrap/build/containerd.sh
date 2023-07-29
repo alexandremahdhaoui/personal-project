@@ -11,7 +11,7 @@ DOWNLOAD_DIR="/usr/local"
 curl -L "${URL}" | sudo tar -Cxvzf "${DOWNLOAD_DIR}"
 
 ## Post-install
-CONTAINERD_SERVICE_DEST_PATH="/usr/local/lib/systemd/system/containerd.service"
+CONTAINERD_SERVICE_DEST_PATH="/usr/lib/systemd/system/containerd.service"
 CONTAINERD_SERVICE_URL="https://raw.githubusercontent.com/containerd/containerd/${RELEASE}/containerd.service"
 # Install containerd service
 curl -sLo "${CONTAINERD_SERVICE_DEST_PATH}" "${CONTAINERD_SERVICE_URL}"

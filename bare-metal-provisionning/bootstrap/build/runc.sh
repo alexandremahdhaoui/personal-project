@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 # Preparing workdir
 WORKDIR="/tmp"
 cd "${WORKDIR}" || exit 1
