@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 # DISCLAIMER: this operation is not automated and must be run
 
@@ -25,9 +25,4 @@ dhcp-boot=${IPXE_EFI_FILENAME}
 EOF
 # restart dnsmasq
 service dnsmasq restart
-####
-
-####
-# Cleanup
-rm -rf "${WORKDIR}"
 ####
