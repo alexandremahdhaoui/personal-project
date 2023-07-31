@@ -4,10 +4,10 @@ set -xe
 
 # DISCLAIMER: This script is intended to run inside an init-container, therefore cleanup's are skipped
 
+# ip addr of the MetalConf server
 METAL_CONF_IP="${1}"
-
-# OUTPUT_DIR already exist: an emptyDir volume is mounted to that path
-OUTPUT_DIR="/build"
+# OUTPUT_DIR is an emptyDir volume is mounted to this specified path
+OUTPUT_DIR="${2}"
 
 # Prerequisites
 dnf install -y git make gcc binutils perl xz mtools
