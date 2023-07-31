@@ -1,3 +1,8 @@
+#!/bin/bash
+
+set -xe
+
+cat <<EOF | kubectl create -f -
 ---
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
@@ -6,15 +11,18 @@ metadata:
 spec:
   config: '{
       "cniVersion": "0.3.1",
-	  "name": "test",
-	  "type": "macvlan",
-	  "master": "enp0s31f6",
-	  "mode": "bridge",
-	  "linkInContainer": false,
-	  "ipam": {
-		"type": "dhcp"
-	  }
+	    "name": "test",
+	    "type": "macvlan",
+	    "master": "enp0s31f6",
+	    "mode": "bridge",
+	    "linkInContainer": false,
+	    "ipam": {
+	      "type": "dhcp"
+	    }
     }'
+EOF
+sleep 10
+cat <<EOF | kubectl create -f -
 ---
 apiVersion: v1
 kind: Pod
@@ -28,3 +36,6 @@ spec:
     image: ealen/echo-server:latest
     ports:
       - containerPort: 80
+EOF
+
+kubectl delete networkattachmentdefinition.k8s.cni.cncf.io/test pod/test

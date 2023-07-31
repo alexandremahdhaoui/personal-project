@@ -20,10 +20,6 @@ systemctl daemon-reload
 systemctl enable --now containerd
 ## Configure systemd cgroup driver
 # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
-# Prerequisites
-dnf install -y jq
-curl -sLo /usr/local/bin/yj "https://github.com/sclevine/yj/releases/download/v5.1.0/yj-linux-${ARCH}"
-chmod 755 /usr/local/bin/yj
 # generate
 mkdir -p /etc/containerd
 containerd config default \

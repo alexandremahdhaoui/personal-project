@@ -11,7 +11,7 @@ REPO="https://github.com/opencontainers/runc"
 REPO_DIR="$(basename "${REPO}" .git)"
 
 # Pre-install
-dnf install -y protobuf-compiler golang libseccomp libseccomp-devel
+dnf install -y git protobuf-compiler golang libseccomp libseccomp-devel
 
 # Install
 git clone "${REPO}"
@@ -20,7 +20,7 @@ make
 make install
 
 # Post-install
-dnf remove -y protobuf-compiler golang
+dnf remove -y git protobuf-compiler golang
 
 # Cleanup
 cd "${WORKDIR}" || exit 1
