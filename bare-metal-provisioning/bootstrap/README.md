@@ -4,7 +4,8 @@
 
 - [ ] Create or Install operator for managing openWrt router.
   - To automate the iPXE provisionning
-- [ ] Take look at [bitnami/charts](https://github.com/bitnami/charts/tree/main/bitnami) & update install scripts with
+- [ ] Take look at [bitnami/charts](https://github.com/bitnami/charts/tree/main/bitnami) & update install scripts
+  - or alternatively [truecharts/charts](https://github.com/truecharts/charts)
 using these charts. E.g.: for Multus CNI.
 - [ ] Install cert-manager... etc
 
