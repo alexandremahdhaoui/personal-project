@@ -24,5 +24,5 @@ tftp-root=${TFTP_ROOT}
 dhcp-boot=${IPXE_EFI_FILENAME}
 EOF
 # restart dnsmasq
-service dnsmasq restart
+sudo service dnsmasq restart
 ####

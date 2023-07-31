@@ -16,9 +16,9 @@ ssh into your router and run:
 RELEASE="main"
 BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/${RELEASE}/bare-metal-provisioning/bootstrap/build"
 METALCONF_IPXE_EFI_URL="172.16.0.3/ipxe/efi"
-SCRIPT="router_add_ipxe_support"
+SCRIPT="router_add_ipxe_support.sh"
 
-curl -sfL "${BASE_URL}/${SCRIPT}.sh" | sh -xse - "${METALCONF_IPXE_EFI_URL}"
+curl -sfL "${BASE_URL}/${SCRIPT}" | sh -xse - "${METALCONF_IPXE_EFI_URL}"
 ```
 
 ## Prepare your system
