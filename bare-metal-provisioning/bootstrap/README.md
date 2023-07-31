@@ -19,6 +19,7 @@ METALCONF_IPXE_EFI_URL="172.16.0.3/ipxe/efi"
 SCRIPT="router_add_ipxe_support.sh"
 
 curl -sfL "${BASE_URL}/${SCRIPT}" | sh -xse - "${METALCONF_IPXE_EFI_URL}"
+service dnsmasq restart
 ```
 
 ## Prepare your system

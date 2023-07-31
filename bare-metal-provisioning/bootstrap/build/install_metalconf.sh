@@ -4,6 +4,8 @@ set -xe
 
 # MetalConf Documentation
 #
+# alternative: https://github.com/poseidon/matchbox
+#
 # Introduction
 #   - Server resolves to metalconf.local resides at addr 172.16.0.3,
 #     or for a subnet XXX.XXX.XXX.0/{8,12,16,24}: resides on addr XXX.XXX.XXX.3
@@ -21,16 +23,22 @@ set -xe
 #   - Add authentication mechanism
 #   - Add orchestration logic to provide custom iPXE or ignition file.
 
+
 METALCONF_NAME="MetalConf"
 METALCONF_VERSION="v0.1.0"
 METALCONF_IP="172.16.0.3"
-
-NGINX_ROOT_DIR="/nginx"
-IPXE_EFI_EMPTY_DIR="/ipxe-efi"
-
-COMPILE_IPXE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/compile_ipxe.sh"
 METALCONF_IPXE_CONFIG_URL="${METALCONF_IP}/ipxe/config"
 
+NGINX_ROOT_DIR="/nginx"
+IPXE_EFI_BUILD_DIR="/ipxe-efi"
+IGNITION_BUILD_DIR="/ignition"
+
+RELEASE="main"
+BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/${RELEASE}/bare-metal-provisioning/bootstrap/build"
+BUILD_IPXE_URL="${BASE_URL}/build_ipxe.sh"
+BUILD_IGNITION_URL="${BASE_URL}/build_ignition.sh"
+
+# Prerequisites
 dnf install -y helm
 
 # ConfigMap
@@ -42,11 +50,32 @@ metadata:
   namespace: default
 data:
   config.ipxe: |
-    <ipxe_config>
-  ignition: |
-    <ignition_file>
+    #!ipxe
+
+    set STREAM stable
+    set VERSION 38.20230709.3.0
+    set INSTALLDEV /dev/sda
+    set CONFIGURL https://example.com/config.ign
+
+    set BASEURL https://builds.coreos.fedoraproject.org/prod/streams/\${STREAM}/builds/\${VERSION}/x86_64
+
+    kernel \${BASEURL}/fedora-coreos-\${VERSION}-live-kernel-x86_64 initrd=main coreos.live.rootfs_url=\${BASEURL}/fedora-coreos-\${VERSION}-live-rootfs.x86_64.img coreos.inst.install_dev=\${INSTALLDEV} coreos.inst.ignition_url=\${CONFIGURL}
+    initrd --name main \${BASEURL}/fedora-coreos-\${VERSION}-live-initramfs.x86_64.img
+
+    boot
+
+  # butane will be available only for "kubeadm join".
+  # bootstrapping init through iPXE is out of scope atm
+  # NB0: once we have at least 3 servers running the control plane, we could restart a server to boot as a control
+  #      plane, and enable us to rollover the manual "bootstrap init" node.
+  # NB1: there is no distinction between booting a control plane node & a worker node.
+  #      we need during refactoring to make the ignition provisioning dynamic.
+  #      we could also create an operator that takes care to track servers & orchestrate the bare metal cluster.
+  butane: |
+    <butane-config>
+
   kubeadm: |
-    <kubeadm>
+    <insert_kubeadm_join_command_or_a_token>
 EOF
 
 #### Install nginx helm chart
@@ -56,10 +85,18 @@ fullnameOverride: metalconf
 initContainers:
   - name: ipxe-efi
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${COMPILE_IPXE_URL}" | sh -xse - ${METALCONF_IPXE_CONFIG_URL} ${IPXE_EFI_EMPTY_DIR}' ]
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IPXE_URL}" | sh -xse - ${METALCONF_IPXE_CONFIG_URL} ${IPXE_EFI_BUILD_DIR}' ]
     volumeMounts:
       - name: ipxe-efi
-        mountPath: ${IPXE_EFI_EMPTY_DIR}
+        mountPath: ${IPXE_EFI_BUILD_DIR}
+  - name: ignition
+    image: fedora:latest
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/ignition' ]
+    volumeMounts:
+      - name: metalconf
+        mountPath: /input
+      - name: ignition
+        mountPath: /output
 
 serverBlock: |-
   server {
@@ -67,7 +104,7 @@ serverBlock: |-
 
     location /ipxe/efi {
       index ipxe.efi;
-      alias ${IPXE_EFI_EMPTY_DIR};
+      alias ${IPXE_EFI_BUILD_DIR};
     }
 
     location /ipxe/config {
@@ -77,7 +114,7 @@ serverBlock: |-
 
     location /ignition {
       index ignition;
-      alias ${NGINX_ROOT_DIR};
+      alias ${IGNITION_BUILD_DIR};
     }
 
     location /kubeadm {
@@ -96,11 +133,15 @@ extraVolumes:
       name: metalconf
   - name: ipxe-efi
     emptyDir: {}
+  - name: ignition
+    emptyDir: {}
 extraVolumeMounts:
   - name: metalconf
     mountPath: ${NGINX_ROOT_DIR}
   - name: ipxe-efi
-    mountPath: ${IPXE_EFI_EMPTY_DIR}
+    mountPath: ${IPXE_EFI_BUILD_DIR}
+  - name: ignition
+    mountPath: ${IGNITION_BUILD_DIR}
 
 service:
   annotations:

@@ -3,19 +3,19 @@
 set -xe
 
 # DISCLAIMER: This script is intended to run inside an init-container, therefore cleanup's are skipped
+#
+# To build locally the iPXE binary w/ embedded script, please run:
+#   ```shell
+#   k run fedora --image fedora:latest --command -- sleep 3600 && k exec -it fedora -- bash
+#   ```
 
-# ip addr of the MetalConf server
-METALCONF_IPXE_CONFIG_URL="${1}"
+# url to webserver hosting the iPXE script
+IPXE_CONFIG_URL="${1}"
 # OUTPUT_DIR is an emptyDir volume is mounted to this specified path
 OUTPUT_DIR="${2}"
 
 # Prerequisites
 dnf install -y git make gcc binutils perl xz mtools
-
-#### build iPXE binary w/ embedded script
-# Run:
-#   k run fedora --image fedora:latest --command -- sleep 3600
-#   k exec -it fedora -- bash
 
 # prepare workdir
 WORKDIR="/tmp/workdir"
@@ -25,11 +25,11 @@ cd "${WORKDIR}" || exit 1
 # create embedded script
 IPXE_SCRIPT="${WORKDIR}/script.ipxe"
 
-# Create the script that will chain to METALCONF_IPXE_CONFIG_URL="metalconf.local/ipxe/config"
+# Create the script that will chain to IPXE_CONFIG_URL, e.g.: metalconf.local/ipxe/config
 cat <<EOF | tee "${IPXE_SCRIPT}"
 #!ipxe
 dhcp
-chain http://${METALCONF_IPXE_CONFIG_URL}
+chain http://${IPXE_CONFIG_URL}
 EOF
 
 # clone repo
