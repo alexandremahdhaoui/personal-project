@@ -24,8 +24,12 @@ set -xe
 METALCONF_NAME="MetalConf"
 METALCONF_VERSION="v0.1.0"
 METALCONF_IP="172.16.0.3"
-NGINX_ROOT_DIR="/nginx"
 
+NGINX_ROOT_DIR="/nginx"
+IPXE_EFI_EMPTY_DIR="/ipxe-efi"
+
+COMPILE_IPXE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/compile_ipxe.sh"
+METALCONF_IPXE_CONFIG_URL="${METALCONF_IP}/ipxe/config"
 
 dnf install -y helm
 
@@ -37,23 +41,49 @@ metadata:
   name: metalconf
   namespace: default
 data:
-  SPECIAL_LEVEL: very
-  SPECIAL_TYPE: charm
-  ipxe-config
+  config.ipxe: |
+    <ipxe_config>
+  ignition: |
+    <ignition_file>
+  kubeadm: |
+    <kubeadm>
 EOF
 
 #### Install nginx helm chart
 cat <<EOF | helm upgrade --install metalconf oci://registry-1.docker.io/bitnamicharts/nginx --values -
 fullnameOverride: metalconf
 
-#initContainers:
-# - name: ipxe-efi
+initContainers:
+  - name: ipxe-efi
+    image: fedora:latest
+    command: [ 'sh', '-c', 'curl -sL "${COMPILE_IPXE_URL}" | sh -xse - ${METALCONF_IPXE_CONFIG_URL} ${IPXE_EFI_EMPTY_DIR}' ]
+    volumeMounts:
+      - name: ipxe-efi
+        mountPath: ${IPXE_EFI_EMPTY_DIR}
 
 serverBlock: |-
   server {
     listen 0.0.0.0:8080;
 
-    root ${NGINX_ROOT_DIR};
+    location /ipxe/efi {
+      index ipxe.efi;
+      alias ${IPXE_EFI_EMPTY_DIR};
+    }
+
+    location /ipxe/config {
+      index config.ipxe;
+      alias ${NGINX_ROOT_DIR};
+    }
+
+    location /ignition {
+      index ignition;
+      alias ${NGINX_ROOT_DIR};
+    }
+
+    location /kubeadm {
+      index kubeadm;
+      alias ${NGINX_ROOT_DIR};
+    }
 
     location / {
       return 200 "${METALCONF_NAME} ${METALCONF_VERSION}\n";
@@ -61,12 +91,16 @@ serverBlock: |-
   }
 
 extraVolumes:
+  - name: metalconf
+    configMap:
+      name: metalconf
   - name: ipxe-efi
     emptyDir: {}
+extraVolumeMounts:
   - name: metalconf
-extraVolumesMounts:
-  - name: metalconf
-    mountPath: ${NGINX_ROOT_DIR}/
+    mountPath: ${NGINX_ROOT_DIR}
+  - name: ipxe-efi
+    mountPath: ${IPXE_EFI_EMPTY_DIR}
 
 service:
   annotations:
