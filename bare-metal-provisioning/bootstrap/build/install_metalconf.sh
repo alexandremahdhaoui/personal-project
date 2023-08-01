@@ -28,7 +28,7 @@ METALCONF_IP="${1:-"10.0.0.3"}"
 METALCONF_NAME="MetalConf"
 METALCONF_VERSION="v0.1.0"
 METALCONF_IPXE_CONFIG_URL="${METALCONF_IP}/ipxe/config"
-METALCONF_IGNITION_URL="${METALCONF_IP}/ignition"
+METALCONF_IGNITION_URL="${METALCONF_IP}/ignition/bootstrap_join_worker"
 
 NGINX_ROOT_DIR="/nginx"
 IPXE_EFI_BUILD_DIR="/ipxe-efi"
@@ -107,7 +107,7 @@ data:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh" | sh -xse -'
+            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
             WantedBy=multi-user.target
   bootstrap_join_worker.butane: |
@@ -123,7 +123,7 @@ data:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_worker.sh" | sh -xse -'
+            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_worker.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
             WantedBy=multi-user.target
   kubeadm: |
@@ -137,7 +137,7 @@ fullnameOverride: metalconf
 initContainers:
   - name: ignition-bootstrap_init
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_init' ]
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_init.butane /output/bootstrap_init' ]
     volumeMounts:
       - name: metalconf
         mountPath: /input
@@ -145,7 +145,7 @@ initContainers:
         mountPath: /output
   - name: ignition-bootstrap_join_control_plane
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_join_control_plane' ]
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_control_plane.butane /output/bootstrap_join_control_plane' ]
     volumeMounts:
       - name: metalconf
         mountPath: /input
@@ -153,7 +153,7 @@ initContainers:
         mountPath: /output
   - name: ignition-bootstrap_join_worker
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_join_worker' ]
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_worker.butane /output/bootstrap_join_worker' ]
     volumeMounts:
       - name: metalconf
         mountPath: /input
