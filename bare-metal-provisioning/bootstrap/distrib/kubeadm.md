@@ -8,7 +8,7 @@
 
 ```shell
 URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_init.sh"
-curl -sfL "${URL}" | sh -xe -
+curl -sfL "${URL}" -H 'Cache-Control: no-cache' | sh -xe -
 ```
 
 ## Join cluster as a Control Plane Node
