@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
+
 set -xe
 
 RELEASE="main"
@@ -11,7 +13,13 @@ curl -sfL "${URL}" | sh -xe -
 
 # run kubeadm
 kubeadm init
+
+# export kubeconfig
+export KUBECONFIG=/etc/kubernetes/admin.conf
 echo "export KUBECONFIG=/etc/kubernetes/admin.conf" | tee -a /etc/bashrc
+
+# untaint bootstrap-init node
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 # install a CNI network plugin
 curl -sfL "${BASE_URL}/install_network_flannel.sh" | sh -xse - "172.16.0.0/16"

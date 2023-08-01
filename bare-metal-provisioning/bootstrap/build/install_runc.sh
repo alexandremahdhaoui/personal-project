@@ -20,7 +20,7 @@ make
 make install
 
 # Post-install
-dnf remove -y git protobuf-compiler golang
+dnf remove -y protobuf-compiler golang
 
 # Cleanup
 cd "${WORKDIR}" || exit 1

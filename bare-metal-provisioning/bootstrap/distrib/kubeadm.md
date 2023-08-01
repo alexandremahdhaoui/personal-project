@@ -4,56 +4,17 @@
 - [Untaint CP node to enable it as a worker](https://stackoverflow.com/a/74792489)
 - [Schedule Pods on a CP node](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#control-plane-node-isolation)
 
-## Prerequisites
-
-### Permanently disable swap
-
-```shell
-systemctl disable "systemd-zram-setup@zram0.service"
-systemctl mask "systemd-zram-setup@zram0.service"
-swapoff -a
-```
-
-### Update firewall
-
-```shell
-firewall-cmd --permanent --add-port=6443/tcp
-firewall-cmd --permanent --add-port=10250/tcp
-```
-
-### Verify virtualization
-
-```shell
-grep -E --color '(vmx|svm)' /proc/cpuinfo
-lsmod | grep -i kvm
-```
-
-### Install dependencies
-
-```shell
-dnf install -y socat iproute-tc conntrack
-```
-
-## Install Worker node binaries
-
-List of binaries:
-- cni-plugins
-- containerd
-- crictl
-- kubectl
-- kubelet
-- kube-proxy
-- runc
-
-```shell
-URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_node.sh"
-curl -sfL "${URL}" | sh -xe -
-```
-
 ## Control-plane initialization
 
 ```shell
 URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_init.sh"
+curl -sfL "${URL}" | sh -xe -
+```
+
+## Join cluster as a Control Plane Node
+
+```shell
+URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh"
 curl -sfL "${URL}" | sh -xe -
 ```
 
@@ -64,9 +25,4 @@ URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/
 curl -sfL "${URL}" | sh -xe -
 ```
 
-## Join cluster as a Control Plane Node
 
-```shell
-URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh"
-curl -sfL "${URL}" | sh -xe -
-```

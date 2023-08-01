@@ -28,7 +28,7 @@ lsmod | grep -iq kvm
 dnf install -y socat iproute-tc conntrack
 
 # install tools
-dnf install -y jq
+dnf install -y jq tar git
 curl -sLo /usr/local/bin/yj "https://github.com/sclevine/yj/releases/download/v5.1.0/yj-linux-${ARCH}"
 chmod 755 /usr/local/bin/yj
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
