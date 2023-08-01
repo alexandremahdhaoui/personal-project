@@ -28,6 +28,7 @@ METALCONF_IP="${1:-"10.0.0.3"}"
 METALCONF_NAME="MetalConf"
 METALCONF_VERSION="v0.1.0"
 METALCONF_IPXE_CONFIG_URL="${METALCONF_IP}/ipxe/config"
+METALCONF_IGNITION_URL="${METALCONF_IP}/ignition"
 
 NGINX_ROOT_DIR="/nginx"
 IPXE_EFI_BUILD_DIR="/ipxe-efi"
@@ -55,7 +56,7 @@ data:
     set STREAM stable
     set VERSION 38.20230709.3.0
     set INSTALLDEV /dev/sda
-    set CONFIGURL https://example.com/config.ign
+    set CONFIGURL https://${METALCONF_IGNITION_URL}
 
     set BASEURL https://builds.coreos.fedoraproject.org/prod/streams/\${STREAM}/builds/\${VERSION}/x86_64
 
@@ -72,8 +73,21 @@ data:
   #      we need during refactoring to make the ignition provisioning dynamic.
   #      we could also create an operator that takes care to track servers & orchestrate the bare metal cluster.
   butane: |
-    <butane-config>
-
+    variant: fcos
+    version: 1.5.0
+    systemd:
+      units:
+        - name: bootstrap.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description="Init cluster"
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_init.sh" | sh -xe -'
+            [Install]
+            WantedBy=multi-user.target
   kubeadm: |
     <insert_kubeadm_join_command_or_a_token>
 EOF
@@ -83,12 +97,6 @@ cat <<EOF | helm upgrade --install metalconf oci://registry-1.docker.io/bitnamic
 fullnameOverride: metalconf
 
 initContainers:
-  - name: ipxe-efi
-    image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IPXE_URL}" | sh -xse - ${METALCONF_IPXE_CONFIG_URL} ${IPXE_EFI_BUILD_DIR}' ]
-    volumeMounts:
-      - name: ipxe-efi
-        mountPath: ${IPXE_EFI_BUILD_DIR}
   - name: ignition
     image: fedora:latest
     command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/ignition' ]
@@ -97,6 +105,12 @@ initContainers:
         mountPath: /input
       - name: ignition
         mountPath: /output
+  - name: ipxe-efi
+    image: fedora:latest
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IPXE_URL}" | sh -xse - ${METALCONF_IPXE_CONFIG_URL} ${IPXE_EFI_BUILD_DIR}' ]
+    volumeMounts:
+      - name: ipxe-efi
+        mountPath: ${IPXE_EFI_BUILD_DIR}
 
 serverBlock: |-
   server {
