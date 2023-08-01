@@ -13,5 +13,5 @@ sudo ln -s "/usr/local/bin/k0s" /usr/local/bin/kubectl
 ## Install Multus
 
 ```shell
-k apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml
+kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml
 ```

@@ -3,7 +3,7 @@
 set -xe
 
 # DISCLAIMER: This script is intended to run inside an init-container, therefore cleanup's are skipped
-# test: k run fedora --image fedora:latest --command -- sleep 3600 && k exec -it fedora -- bash
+# test: kubectl run fedora --image fedora:latest --command -- sleep 3600 && kubectl exec -it fedora -- bash
 
 # url to webserver hosting the iPXE script
 IPXE_CONFIG_URL="${1}"
