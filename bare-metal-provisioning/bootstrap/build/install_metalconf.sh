@@ -39,6 +39,12 @@ BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/
 BUILD_IPXE_URL="${BASE_URL}/build_ipxe.sh"
 BUILD_IGNITION_URL="${BASE_URL}/build_ignition.sh"
 
+. "${BASE_URL}/helpers/get_ipv4.sh"
+
+# TODO: Super insecure, create a service to replace that part. (token will never expire)
+# It's also a bad practice to store that information into a configmap...
+KUBEADM_JOIN_CMD="$(kubeadm token create --print-join-command --ttl 0) --control-plane"
+
 # Prerequisites
 dnf install -y helm
 
@@ -72,12 +78,12 @@ data:
   # NB1: there is no distinction between booting a control plane node & a worker node.
   #      we need during refactoring to make the ignition provisioning dynamic.
   #      we could also create an operator that takes care to track servers & orchestrate the bare metal cluster.
-  butane: |
+  bootstrap_init.butane: |
     variant: fcos
     version: 1.5.0
     systemd:
       units:
-        - name: bootstrap.service
+        - name: bootstrap_init.service
           enabled: true
           contents: |
             [Unit]
@@ -86,6 +92,38 @@ data:
             Type=oneshot
             RemainAfterExit=yes
             ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_init.sh" | sh -xe -'
+            [Install]
+            WantedBy=multi-user.target
+  bootstrap_join_control_plane.butane: |
+    variant: fcos
+    version: 1.5.0
+    systemd:
+      units:
+        - name: bootstrap_join_control_plane.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description="Join cluster as control plane"
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh" | sh -xse -'
+            [Install]
+            WantedBy=multi-user.target
+  bootstrap_join_worker.butane: |
+    variant: fcos
+    version: 1.5.0
+    systemd:
+      units:
+        - name: bootstrap_join_worker.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description="Join cluster as worker node"
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_worker.sh" | sh -xse -'
             [Install]
             WantedBy=multi-user.target
   kubeadm: |
@@ -97,9 +135,25 @@ cat <<EOF | helm upgrade --install metalconf oci://registry-1.docker.io/bitnamic
 fullnameOverride: metalconf
 
 initContainers:
-  - name: ignition
+  - name: ignition-bootstrap_init
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/ignition' ]
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_init' ]
+    volumeMounts:
+      - name: metalconf
+        mountPath: /input
+      - name: ignition
+        mountPath: /output
+  - name: ignition-bootstrap_join_control_plane
+    image: fedora:latest
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_join_control_plane' ]
+    volumeMounts:
+      - name: metalconf
+        mountPath: /input
+      - name: ignition
+        mountPath: /output
+  - name: ignition-bootstrap_join_worker
+    image: fedora:latest
+    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/butane /output/bootstrap_join_worker' ]
     volumeMounts:
       - name: metalconf
         mountPath: /input
@@ -127,12 +181,12 @@ serverBlock: |-
     }
 
     location /ignition {
-      index ignition;
+      autoindex on;
       alias ${IGNITION_BUILD_DIR};
     }
 
     location /kubeadm {
-      index kubeadm;
+      autoindex on;
       alias ${NGINX_ROOT_DIR};
     }
 

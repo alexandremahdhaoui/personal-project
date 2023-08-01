@@ -1,21 +1,16 @@
 #!/bin/bash
 
-TOKEN="${1}"
 
-CONTROL_PLANE_HOST="${2}"
-CONTROL_PLANE_PORT="${3}"
-
-DISCOVERY_TOKEN_CA_CERT_HASH="${4}"
+KUBEADM_JOIN_CMD="${1}"
 
 set -xe
 
 URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/node_init.sh"
 curl -sfL "${URL}" | sh -xe -
 
+# TODO: REMOVE - The idea was to make use of some NodePorts & disabling firewall in a first place.
+# Better enable firewall & use a proper set of rules.
 # disable firewalld for worker nodes
 systemctl disable firewalld --now
 
-kubeadm join \
-  --token "${TOKEN}" \
-  "${CONTROL_PLANE_HOST}:${CONTROL_PLANE_PORT}" \
-  --discovery-token-ca-cert-hash "sha256:${DISCOVERY_TOKEN_CA_CERT_HASH}"
+${KUBEADM_JOIN_CMD}
