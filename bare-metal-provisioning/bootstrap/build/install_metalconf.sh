@@ -89,7 +89,7 @@ data:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_init.sh" | sh -xe -'
+            ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_init.sh" | sh -xe -'
             [Install]
             WantedBy=multi-user.target
   bootstrap_join_control_plane.butane: |
@@ -105,7 +105,7 @@ data:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_control_plane.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
+            ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_join_control_plane.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
             WantedBy=multi-user.target
   bootstrap_join_worker.butane: |
@@ -121,7 +121,7 @@ data:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            ExecStart=bash -c 'curl -sfL "https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_worker.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
+            ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_join_worker.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
             WantedBy=multi-user.target
   kubeadm: |
