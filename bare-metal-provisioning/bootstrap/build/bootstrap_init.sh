@@ -16,8 +16,11 @@ BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/
 URL="${BASE_URL}/node_init.sh"
 curl -sfL "${URL}" | sh -xe -
 
-# run kubeadm
+# TODO: IPXE boot won't need these 2 lines of cleanup
 kubeadm reset -f
+rm -rf /etc/cni/net.d/*
+
+# run kubeadm
 kubeadm init --service-cidr="${POD_CIDR}"  --pod-network-cidr="${POD_CIDR}"
 
 # export kubeconfig
@@ -30,7 +33,7 @@ sleep 10
 
 # install a CNI network plugin
 curl -sfL "${BASE_URL}/install_network_calico.sh" | sh -xse - "${POD_CIDR}"
-sleep 10
+sleep 30
 
 # install metallb
 curl -sfL "${BASE_URL}/install_network_metallb.sh" | sh -xse - "${METALLB_POOL_PUBLIC}" "${METALLB_POOL_RESTRICTED}"
