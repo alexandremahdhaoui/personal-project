@@ -33,7 +33,7 @@ curl -sfL "${BASE_URL}/install_network_calico.sh" | sh -xse - "${POD_CIDR}"
 sleep 10
 
 # install metallb
-curl -sfL "${BASE_URL}/install_metallb.sh" | sh -xse - "${METALLB_POOL_PUBLIC}" "${METALLB_POOL_RESTRICTED}"
+curl -sfL "${BASE_URL}/install_network_metallb.sh" | sh -xse - "${METALLB_POOL_PUBLIC}" "${METALLB_POOL_RESTRICTED}"
 sleep 10
 
 # install metalconf
