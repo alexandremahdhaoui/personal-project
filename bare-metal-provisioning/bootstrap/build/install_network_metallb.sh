@@ -9,6 +9,9 @@ RELEASE="v0.13.10"
 
 kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/${RELEASE}/config/manifests/metallb-native.yaml"
 
+# TODO: Replace this sleep by a `kubectl wait`
+sleep 30
+
 cat <<EOF | kubectl apply -f -
 ---
 apiVersion: metallb.io/v1beta1
