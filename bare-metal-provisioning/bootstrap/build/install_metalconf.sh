@@ -39,8 +39,6 @@ BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/
 BUILD_IPXE_URL="${BASE_URL}/build_ipxe.sh"
 BUILD_IGNITION_URL="${BASE_URL}/build_ignition.sh"
 
-. "${BASE_URL}/helpers/get_ipv4.sh"
-
 # TODO: Super insecure, create a service to replace that part. (token will never expire)
 # It's also a bad practice to store that information into a configmap...
 KUBEADM_JOIN_CMD="$(kubeadm token create --print-join-command --ttl 0) --control-plane"
