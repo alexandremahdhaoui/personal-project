@@ -24,5 +24,3 @@ curl -sfL "${URL}" | sh -xe -
 URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/main/bare-metal-provisioning/bootstrap/build/bootstrap_join_worker.sh"
 curl -sfL "${URL}" | sh -xe -
 ```
-
-
