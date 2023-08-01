@@ -2,4 +2,6 @@
 
 set -xe
 
-kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml
+RELEASE="v4.0.2"
+
+kubectl apply -f "https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/${RELEASE}/deployments/multus-daemonset.yml"
