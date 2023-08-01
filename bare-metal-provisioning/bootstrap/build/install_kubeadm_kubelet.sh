@@ -6,8 +6,9 @@ DOWNLOAD_DIR="/usr/local/bin"
 RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
 ARCH="amd64"
 
-curl -sfL --remote-name-all "https://dl.k8s.io/release/${RELEASE}/bin/linux/${ARCH}/{kubeadm,kubelet}" -o "${DOWNLOAD_DIR}"
-chmod 755 "${DOWNLOAD_DIR}/"{kubeadm,kubelet}
+curl -sfL --remote-name-all https://dl.k8s.io/release/${RELEASE}/bin/linux/${ARCH}/{kubeadm,kubelet}
+chmod 755 {kubeadm,kubelet}
+mv {kubeadm,kubelet} "${DOWNLOAD_DIR}"
 
 RELEASE_VERSION="v0.15.1"
 curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSION}/cmd/kubepkg/templates/latest/deb/kubelet/lib/systemd/system/kubelet.service"\
