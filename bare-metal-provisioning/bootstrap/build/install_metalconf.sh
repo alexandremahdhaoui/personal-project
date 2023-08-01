@@ -7,7 +7,7 @@ set -xe
 # alternative: https://github.com/poseidon/matchbox
 #
 # Introduction
-#   - Server resolves to metalconf.local resides at addr 172.16.0.3,
+#   - Server resolves to metalconf.local resides at addr 10.0.0.3,
 #     or for a subnet XXX.XXX.XXX.0/{8,12,16,24}: resides on addr XXX.XXX.XXX.3
 #
 # What does MetalConf serves?
@@ -23,10 +23,10 @@ set -xe
 #   - Add authentication mechanism
 #   - Add orchestration logic to provide custom iPXE or ignition file.
 
+METALCONF_IP="${1:-"10.0.0.3"}"
 
 METALCONF_NAME="MetalConf"
 METALCONF_VERSION="v0.1.0"
-METALCONF_IP="172.16.0.3"
 METALCONF_IPXE_CONFIG_URL="${METALCONF_IP}/ipxe/config"
 
 NGINX_ROOT_DIR="/nginx"

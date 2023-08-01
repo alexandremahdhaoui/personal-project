@@ -2,6 +2,9 @@
 
 set -xe
 
+LB_POOL_PUBLIC="${1:-"10.1.0.0-10.1.255.254"}"
+LB_POOL_RESERVED="${2:-"10.0.0.2-10.0.0.4"}"
+
 RELEASE="v0.13.10"
 
 kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/${RELEASE}/config/manifests/metallb-native.yaml"
@@ -15,7 +18,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 172.31.0.0-172.31.255.254
+  - ${LB_POOL_PUBLIC}
 ---
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
@@ -24,7 +27,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 172.16.0.2-172.16.0.4
+  - ${LB_POOL_RESERVED}
   autoAssign: false
 ---
 apiVersion: metallb.io/v1beta1

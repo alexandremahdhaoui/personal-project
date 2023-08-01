@@ -14,7 +14,7 @@ kubeadm init
 echo "export KUBECONFIG=/etc/kubernetes/admin.conf" | tee -a /etc/bashrc
 
 # install a CNI network plugin
-curl -sfL "${BASE_URL}/install_network_calico.sh" | sh -xe -
+curl -sfL "${BASE_URL}/install_network_flannel.sh" | sh -xse - "172.16.0.0/16"
 
 # install Multus
 curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
@@ -23,4 +23,7 @@ curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
 curl -sfL "${BASE_URL}/install_kubevirt.sh" | sh -xe -
 
 # install metallb
-curl -sfL "${BASE_URL}/install_metallb.sh" | sh -xe -
+curl -sfL "${BASE_URL}/install_metallb.sh" | sh -xe - "10.1.0.0-10.1.255.254" "10.0.0.2-10.0.0.4"
+
+# install metalconf
+curl -sfL "${BASE_URL}/install_metalconf.sh" | sh -xse - "10.0.0.3"
