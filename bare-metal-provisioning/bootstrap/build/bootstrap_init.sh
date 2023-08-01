@@ -12,7 +12,7 @@ URL="${BASE_URL}/node_init.sh"
 curl -sfL "${URL}" | sh -xe -
 
 # run kubeadm
-kubeadm init
+kubeadm reset -f && kubeadm init
 
 # export kubeconfig
 export KUBECONFIG=/etc/kubernetes/admin.conf
