@@ -12,11 +12,8 @@ kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${RELEA
 # Create the Kubevirt CR (instance deployment request) which triggers the actual installation
 kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-cr.yaml"
 
-# TODO: Remove sleep
-sleep 30
-
 # wait until all Kubevirt components are up
-kubectl -n kubevirt wait kv kubevirt --for condition=Available
+kubectl wait kv kubevirt --for condition=Available -n kubevirt --timeout 300
 
 # Enable feature flags
 cat <<EOF | kubectl apply -f -
