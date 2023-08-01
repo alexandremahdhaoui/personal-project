@@ -39,8 +39,8 @@ sleep 10
 # install metalconf
 curl -sfL "${BASE_URL}/install_metalconf.sh" | sh -xse - "${METALCONF_IP}"
 
-#### Last stuff to install
-# install Multus
-curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
 # install kubevirt
 curl -sfL "${BASE_URL}/install_kubevirt.sh" | sh -xe -
+
+# install Multus
+curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
