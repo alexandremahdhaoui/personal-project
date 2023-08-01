@@ -30,9 +30,7 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 sleep 10
 # install a CNI network plugin
 curl -sfL "${BASE_URL}/install_network_calico.sh" | sh -xse - "${POD_CIDR}"
-sleep 10
-# install Multus
-curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
+
 sleep 10
 # install metallb
 curl -sfL "${BASE_URL}/install_metallb.sh" | sh -xse - "${METALLB_POOL_PUBLIC}" "${METALLB_POOL_RESTRICTED}"
@@ -40,5 +38,14 @@ sleep 10
 # install metalconf
 curl -sfL "${BASE_URL}/install_metalconf.sh" | sh -xse - "${METALCONF_IP}"
 sleep 10
+
+
+
+
+#### Last stuff to install
+# install Multus
+curl -sfL "${BASE_URL}/install_network_multus.sh" | sh -xe -
+sleep 10
 # install kubevirt
 curl -sfL "${BASE_URL}/install_kubevirt.sh" | sh -xe -
+sleep 10
