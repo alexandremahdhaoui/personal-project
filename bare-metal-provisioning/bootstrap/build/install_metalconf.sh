@@ -85,13 +85,14 @@ data:
           enabled: true
           contents: |
             [Unit]
+            After=multi-user.target
             Description="Init cluster"
             [Service]
             Type=oneshot
             RemainAfterExit=yes
             ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_init.sh" | sh -xe -'
             [Install]
-            WantedBy=multi-user.target
+            WantedBy=default.target
   bootstrap_join_control_plane.butane: |
     variant: fcos
     version: 1.5.0
@@ -101,13 +102,14 @@ data:
           enabled: true
           contents: |
             [Unit]
+            After=multi-user.target
             Description="Join cluster as control plane"
             [Service]
             Type=oneshot
             RemainAfterExit=yes
             ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_join_control_plane.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
-            WantedBy=multi-user.target
+            WantedBy=default.target
   bootstrap_join_worker.butane: |
     variant: fcos
     version: 1.5.0
@@ -117,13 +119,14 @@ data:
           enabled: true
           contents: |
             [Unit]
+            After=multi-user.target
             Description="Join cluster as worker node"
             [Service]
             Type=oneshot
             RemainAfterExit=yes
             ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_join_worker.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
-            WantedBy=multi-user.target
+            WantedBy=default.target
   kubeadm: |
     <insert_kubeadm_join_command_or_a_token>
 EOF
