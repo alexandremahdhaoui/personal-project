@@ -133,7 +133,7 @@ cat <<EOF | helm upgrade --install metalconf oci://registry-1.docker.io/bitnamic
 fullnameOverride: metalconf
 
 initContainers:
-  - name: ignition-bootstrap_init
+  - name: ignition-bootstrap-init
     image: fedora:latest
     command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_init.butane /output/bootstrap_init' ]
     volumeMounts:
@@ -141,7 +141,7 @@ initContainers:
         mountPath: /input
       - name: ignition
         mountPath: /output
-  - name: ignition-bootstrap_join_control_plane
+  - name: ignition-bootstrap-join-control-plane
     image: fedora:latest
     command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_control_plane.butane /output/bootstrap_join_control_plane' ]
     volumeMounts:
@@ -149,7 +149,7 @@ initContainers:
         mountPath: /input
       - name: ignition
         mountPath: /output
-  - name: ignition-bootstrap_join_worker
+  - name: ignition-bootstrap-join-worker
     image: fedora:latest
     command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_worker.butane /output/bootstrap_join_worker' ]
     volumeMounts:
