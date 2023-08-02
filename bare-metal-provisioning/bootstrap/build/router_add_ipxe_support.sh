@@ -12,7 +12,14 @@ METALCONF_IPXE_EFI_URL="${1:-10.0.0.3}"
 TFTP_ROOT="/var/lib/tftp"
 IPXE_EFI_FILENAME="ipxe.efi"
 
-cat <<EOF | awk '{printf "\toption "$0"\n"}'
+# create tftp root folder
+mkdir -p "/var/lib/${TFTP_ROOT}"
+
+# download image
+curl "http://${METALCONF_IPXE_EFI_URL}" -o "${TFTP_ROOT}/${IPXE_EFI_FILENAME}"
+
+# update config
+CONFIG="$(cat <<EOF | awk '{printf "\toption "$0"\\n"}'
 enable_tftp '1'
 tftp_root '0.0.0.0'
 dhcp-boot '${IPXE_EFI_FILENAME}'
@@ -21,14 +28,9 @@ dhcp-userclass 'set:iPXE,iPXE'
 dhcp-option 'lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:bootfile-name,http://${METALCONF_IPXE_EFI_URL}/ipxe/efi'
 dhcp-option 'lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:vendor-class,HTTPClient'
 EOF
-
-# create tftp root folder
-mkdir -p "/var/lib/${TFTP_ROOT}"
-# download image
-curl "http://${METALCONF_IPXE_EFI_URL}" -o "${TFTP_ROOT}/${IPXE_EFI_FILENAME}"
-# update config
+)"
 # TODO: remove the `head -n 10` and add `-i` parameter to sed
-sed "/^config dnsmasq/a ${CONFIG}" /etc/config/dhcp | head -n 10
+sed -i "/^config dnsmasq/a \ ${CONFIG}" /etc/config/dhcp
 
 
 
