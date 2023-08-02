@@ -13,7 +13,7 @@ kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${RELEA
 kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-cr.yaml"
 
 # wait until all Kubevirt components are up
-kubectl wait kv kubevirt --for condition=Available -n kubevirt --timeout 300
+kubectl wait kv kubevirt --for condition=Available -n kubevirt --timeout 300s
 
 # Enable feature flags
 cat <<EOF | kubectl apply -f -
