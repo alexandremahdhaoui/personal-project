@@ -61,7 +61,7 @@ data:
     set STREAM stable
     set VERSION 38.20230709.3.0
     set INSTALLDEV /dev/sda
-    set CONFIGURL https://${METALCONF_IGNITION_URL}
+    set CONFIGURL http://${METALCONF_IGNITION_URL}
 
     set BASEURL https://builds.coreos.fedoraproject.org/prod/streams/\${STREAM}/builds/\${VERSION}/x86_64
 

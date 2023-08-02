@@ -6,7 +6,7 @@ set -xe
 # test: kubectl run fedora --image fedora:latest --command -- sleep 3600 && kubectl exec -it fedora -- bash
 
 # url to webserver hosting the iPXE script
-IPXE_CONFIG_URL="${1}"
+IPXE_CONFIG_URL="${1:-"10.0.0.3/ipxe/config"}"
 # OUTPUT_DIR is an emptyDir volume is mounted to this specified path
 OUTPUT_DIR="${2}"
 
@@ -25,7 +25,7 @@ IPXE_SCRIPT="${WORKDIR}/script.ipxe"
 cat <<EOF | tee "${IPXE_SCRIPT}"
 #!ipxe
 dhcp
-chain http://${IPXE_CONFIG_URL}
+chain --autofree --replace http://${IPXE_CONFIG_URL}
 EOF
 
 # clone repo
