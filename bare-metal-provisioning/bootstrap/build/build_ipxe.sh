@@ -32,9 +32,9 @@ EOF
 git clone https://github.com/ipxe/ipxe.git
 cd ipxe/src || exit 1
 
+sed -i 's/#undef  DOWNLOAD_PROTO_HTTPS/#define DOWNLOAD_PROTO_HTTPS' ./config/general.h
+
 # compile iPXE image
 BIN=bin-x86_64-efi/ipxe.efi
 make "${BIN}" EMBED="${IPXE_SCRIPT}" NO_WERROR=1
 cp -f "${BIN}" "${OUTPUT_DIR}"
-
-####
