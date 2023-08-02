@@ -17,13 +17,13 @@ alias kcreate="k create"
 
 # Config
 alias kctx="k config current-context"
-kcontexts() {
+kcontexts () {
 	k config get-contexts | awk '{print $1}'
 }
 alias kcu="k config use-context"
 
 # Describe
-kd() { k describe $@; }
+kd () { k describe $@; }
 alias kdds="kd daemonset"
 alias kdi="kd ingress"
 alias kdic="kd ingressclass"
@@ -52,15 +52,15 @@ alias kgic="kg ingressclass"
 alias kgr="kg replicaset"
 alias kgs="kg service"
 alias kgst="kg statefulset"
-kgg()   { kg "$1" | grep "$2"; }
-kggp()  { kgp | grep "$1"; }
-kggpa()  { kgp -A | grep "$1"; }
+kgg ()   { kg "$1" | grep "$2"; }
+kggp ()  { kgp | grep "$1"; }
+kggpa ()  { kgp -A | grep "$1"; }
 
-kgy() { kg $@ -oyaml | yq --colors; }
+kgy () { kg $@ -oyaml | yq --colors; }
 
 # Set
-k.config.set-context.current() { k config set-context --current "$@"; }
-kns() {
+k.config.set-context.current () { k config set-context --current "$@"; }
+kns () {
   if [ ! -z "$1" ]; then
     k.config.set-context.current --namespace="$1" && echo Successfully switched to namespace: "$1"
   else

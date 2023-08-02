@@ -39,8 +39,9 @@ BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/
 BUILD_IPXE_URL="${BASE_URL}/build_ipxe.sh"
 BUILD_IGNITION_URL="${BASE_URL}/build_ignition.sh"
 
-# TODO: Super insecure, create a service to replace that part. (token will never expire)
-# It's also a bad practice to store that information into a configmap...
+# TODO: Super insecure, create a service to replace that part.
+#  - token will never expire
+#  - bad practice to store these info in a configmap
 KUBEADM_JOIN_CMD="$(kubeadm token create --print-join-command --ttl 0) --control-plane"
 
 # Prerequisites
@@ -190,14 +191,13 @@ initContainers:
 serverBlock: |-
   server {
     listen 0.0.0.0:8080;
-    location / {
-      autoindex on;
-      autoindex_format json;
-      autoindex_localtime on;
-      alias ${NGINX_ROOT_DIR};
-    }
+    root ${NGINX_ROOT_DIR};
+    autoindex on;
+    autoindex_format json;
+    autoindex_localtime on;
+
     location /info {
-      return 200 '{"name": "${METALCONF_NAME}", "version": "${METALCONF_VERSION}"\n';
+      return 200 "{\"name\": \"${METALCONF_NAME}\", \"version\": \"${METALCONF_VERSION}}\"\n";
     }
   }
 
@@ -212,12 +212,6 @@ extraVolumes:
   - name: nginx-root-dir
     emptyDir: {}
 extraVolumeMounts:
-  - name: metalconf
-    mountPath: /metalconf
-  - name: ipxe-efi
-    mountPath: ${IPXE_EFI_BUILD_DIR}
-  - name: ignition
-    mountPath: ${IGNITION_BUILD_DIR}
   - name: nginx-root-dir
     mountPath: ${NGINX_ROOT_DIR}
 
