@@ -11,22 +11,35 @@ METALCONF_IPXE_EFI_URL="${1:-10.0.0.3}"
 # prepare tftp root dir
 TFTP_ROOT="/var/lib/tftp"
 IPXE_EFI_FILENAME="ipxe.efi"
-CONFIG="\ \toption enable_tftp \'1\'\n\toption tftp_root '${METALCONF_IPXE_EFI_URL}'\n\toption dhcp-boot '${IPXE_EFI_FILENAME}'"
+
+cat <<EOF | awk '{printf "\toption "$0"\n"}'
+enable_tftp '1'
+tftp_root '0.0.0.0'
+dhcp-boot '${IPXE_EFI_FILENAME}'
+dhcp-match 'set:X86-64_EFI_HTTP,option:client-arch,16'
+dhcp-userclass 'set:iPXE,iPXE'
+dhcp-option 'lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:bootfile-name,http://${METALCONF_IPXE_EFI_URL}/ipxe/efi'
+dhcp-option 'lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:vendor-class,HTTPClient'
+EOF
 
 # create tftp root folder
 mkdir -p "/var/lib/${TFTP_ROOT}"
 # download image
 curl "http://${METALCONF_IPXE_EFI_URL}" -o "${TFTP_ROOT}/${IPXE_EFI_FILENAME}"
 # update config
-sed "/^config dnsmasq/a ${CONFIG}" /etc/config/dhcp
+# TODO: remove the `head -n 10` and add `-i` parameter to sed
+sed "/^config dnsmasq/a ${CONFIG}" /etc/config/dhcp | head -n 10
 
-sudo service dnsmasq restart
 
+
+#sudo service dnsmasq restart
 # cat <<EOF | tee -a /etc/dnsmasq.conf
-# #dhcp-option-force=66,0.0.0.0
-# #dhcp-option-force=67,ipxe.efi
 # enable-tftp
 # tftp-root=${TFTP_ROOT}
 # dhcp-boot=${IPXE_EFI_FILENAME}
+# dhcp-match=set:X86-64_EFI_HTTP,option:client-arch,16
+# dhcp-userclass=set:iPXE,iPXE
+# dhcp-option=lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:bootfile-name,<http url pointing to (bin-x86_64-efi/)ipxe.efi binary>
+# dhcp-option=lan,tag:X86-64_EFI_HTTP,tag:!iPXE,option:vendor-class,HTTPClient
 # EOF
 # restart dnsmasq
