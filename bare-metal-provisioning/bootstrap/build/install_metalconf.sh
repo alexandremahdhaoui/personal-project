@@ -180,6 +180,12 @@ initContainers:
     volumeMounts:
       - name: nginx-root-dir
         mountPath: ${NGINX_ROOT_DIR}
+      - name: metalconf
+        mountPath: /metalconf
+      - name: ignition
+        mountPath: /${IGNITION_BUILD_DIR}
+      - name: ipxe-efi
+        mountPath: ${IPXE_EFI_BUILD_DIR}
 
 serverBlock: |-
   server {
