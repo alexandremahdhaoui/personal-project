@@ -163,33 +163,32 @@ initContainers:
     volumeMounts:
       - name: ipxe-efi
         mountPath: ${IPXE_EFI_BUILD_DIR}
+  - name: nginx-root-dir
+    image: fedora:latest
+    command:
+      - 'sh'
+      - '-c'
+      - |-
+        mkdir -p ${NGINX_ROOT_DIR}/ipxe ${NGINX_ROOT_DIR}/ignition ${NGINX_ROOT_DIR}/kubeadm &&
+        cp -f /metalconf/config.ipxe  ${NGINX_ROOT_DIR}/ipxe/config &&
+        cp -f ${IPXE_EFI_BUILD_DIR}/ipxe.efi &&
+        cp -f ${IGNITION_BUILD_DIR}/{bootstrap_init,bootstrap_join_control_plane,bootstrap_join_worker} ${NGINX_ROOT_DIR}/ignition &&
+        cp -f /metalconf/kubeadm ${NGINX_ROOT_DIR}/kubeadm
+    volumeMounts:
+      - name: nginx-root-dir
+        mountPath: ${NGINX_ROOT_DIR}
 
 serverBlock: |-
   server {
     listen 0.0.0.0:8080;
-
-    location /ipxe/efi {
-      index ipxe.efi;
-      alias ${IPXE_EFI_BUILD_DIR};
-    }
-
-    location /ipxe/config {
-      index config.ipxe;
-      alias ${NGINX_ROOT_DIR};
-    }
-
-    location /ignition {
-      autoindex on;
-      alias ${IGNITION_BUILD_DIR};
-    }
-
-    location /kubeadm {
-      autoindex on;
-      alias ${NGINX_ROOT_DIR};
-    }
-
     location / {
-      return 200 "${METALCONF_NAME} ${METALCONF_VERSION}\n";
+      autoindex on;
+      autoindex_format json;
+      autoindex_localtime on;
+      alias ${NGINX_ROOT_DIR};
+    }
+    location /info {
+      return 200 '{"name": "${METALCONF_NAME}", "version": "${METALCONF_VERSION}"\n';
     }
   }
 
@@ -201,13 +200,17 @@ extraVolumes:
     emptyDir: {}
   - name: ignition
     emptyDir: {}
+  - name: nginx-root-dir
+    emptyDir: {}
 extraVolumeMounts:
   - name: metalconf
-    mountPath: ${NGINX_ROOT_DIR}
+    mountPath: /metalconf
   - name: ipxe-efi
     mountPath: ${IPXE_EFI_BUILD_DIR}
   - name: ignition
     mountPath: ${IGNITION_BUILD_DIR}
+  - name: nginx-root-dir
+    mountPath: ${NGINX_ROOT_DIR}
 
 service:
   annotations:
