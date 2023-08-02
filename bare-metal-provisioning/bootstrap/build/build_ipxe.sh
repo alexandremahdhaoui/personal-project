@@ -11,7 +11,7 @@ IPXE_CONFIG_URL="${1:-"10.0.0.3/ipxe/config"}"
 OUTPUT_DIR="${2}"
 
 # Prerequisites
-dnf install -y git make gcc binutils perl xz mtools
+dnf install -y git make gcc binutils perl xz mtools xz-devel
 
 # prepare workdir
 WORKDIR="/tmp/workdir"
