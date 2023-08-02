@@ -16,7 +16,7 @@ BASE_URL="https://raw.githubusercontent.com/alexandremahdhaoui/personal-project/
 URL="${BASE_URL}/node_init.sh"
 curl -sfL "${URL}" | sh -xe -
 
-# TODO: IPXE boot won't need these 2 lines of cleanup
+# TODO: Remove - IPXE boot won't need these 2 lines of cleanup
 kubeadm reset -f
 rm -rf /etc/cni/net.d/*
 

@@ -173,8 +173,8 @@ initContainers:
       - '-c'
       - |-
         mkdir -p ${NGINX_ROOT_DIR}/ipxe ${NGINX_ROOT_DIR}/ignition ${NGINX_ROOT_DIR}/kubeadm &&
-        cp -f /metalconf/config.ipxe  ${NGINX_ROOT_DIR}/ipxe/config &&
-        cp -f ${IPXE_EFI_BUILD_DIR}/ipxe.efi &&
+        cp -f /metalconf/config.ipxe ${NGINX_ROOT_DIR}/ipxe/config &&
+        cp -f ${IPXE_EFI_BUILD_DIR}/ipxe.efi ${NGINX_ROOT_DIR}/ipxe/efi &&
         cp -f ${IGNITION_BUILD_DIR}/{bootstrap_init,bootstrap_join_control_plane,bootstrap_join_worker} ${NGINX_ROOT_DIR}/ignition &&
         cp -f /metalconf/kubeadm ${NGINX_ROOT_DIR}/kubeadm
     volumeMounts:
