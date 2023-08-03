@@ -133,6 +133,16 @@ data:
             ExecStart=bash -c 'curl -sfL -H 'Cache-Control: no-cache' "${BASE_URL}/bootstrap_join_worker.sh" | sh -xse - "${KUBEADM_JOIN_CMD}"'
             [Install]
             WantedBy=default.target
+  test_fcos.butane: |
+    variant: fcos
+    version: 1.5.0
+    passwd:
+      users:
+        - name: core
+          password_hash: \$y\$j9T\$61iCmQ03P4M12JUBiZ47G1\$eZ5XCsiTpgQudiosv/9HkDhFdVo.UwzlxFPphDmMfrD
+          groups:
+            - wheel
+          shell: /bin/bash
   kubeadm: |
     <insert_kubeadm_join_command_or_a_token>
 EOF
@@ -142,25 +152,15 @@ cat <<EOF | helm upgrade --install metalconf oci://registry-1.docker.io/bitnamic
 fullnameOverride: metalconf
 
 initContainers:
-  - name: ignition-bootstrap-init
+  - name: ignition
     image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_init.butane /output/bootstrap_init' ]
-    volumeMounts:
-      - name: metalconf
-        mountPath: /input
-      - name: ignition
-        mountPath: /output
-  - name: ignition-bootstrap-join-control-plane
-    image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_control_plane.butane /output/bootstrap_join_control_plane' ]
-    volumeMounts:
-      - name: metalconf
-        mountPath: /input
-      - name: ignition
-        mountPath: /output
-  - name: ignition-bootstrap-join-worker
-    image: fedora:latest
-    command: [ 'sh', '-c', 'curl -sL "${BUILD_IGNITION_URL}" | sh -xse - /input/bootstrap_join_worker.butane /output/bootstrap_join_worker' ]
+    command:
+    - 'sh'
+    - '-c'
+    - |-
+      for x in bootstrap_join_worker bootstrap_join_control_plane bootstrap_init output; do
+        curl -sL "${BUILD_IGNITION_URL}" | sh -xse - \${x}.butane \${x}.ign;
+      done
     volumeMounts:
       - name: metalconf
         mountPath: /input
@@ -181,7 +181,7 @@ initContainers:
         mkdir -p ${NGINX_ROOT_DIR}/ipxe ${NGINX_ROOT_DIR}/ignition ${NGINX_ROOT_DIR}/kubeadm &&
         cp -f /metalconf/config.ipxe ${NGINX_ROOT_DIR}/ipxe/config &&
         cp -f ${IPXE_EFI_BUILD_DIR}/ipxe.efi ${NGINX_ROOT_DIR}/ipxe/efi &&
-        cp -f ${IGNITION_BUILD_DIR}/{bootstrap_init,bootstrap_join_control_plane,bootstrap_join_worker} ${NGINX_ROOT_DIR}/ignition &&
+        cp -f ${IGNITION_BUILD_DIR}/*.ign ${NGINX_ROOT_DIR}/ignition &&
         cp -f /metalconf/kubeadm ${NGINX_ROOT_DIR}/kubeadm
     volumeMounts:
       - name: nginx-root-dir
