@@ -23,6 +23,11 @@ set -xe
 #   - Add authentication mechanism
 #   - Add orchestration logic to provide custom iPXE or ignition file.
 
+# Fedora CoreOS & rpm-ostree
+# test: kubectl run fedora --image quay.io/fedora/fedora-coreos:stable --command -- sleep 3600
+#       kubectl exec -it fedora -- bash
+#       kubectl delete pod fedora
+
 METALCONF_IP="${1:-"10.0.0.3"}"
 
 METALCONF_NAME="MetalConf"
