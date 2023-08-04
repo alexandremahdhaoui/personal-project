@@ -37,7 +37,7 @@ More about Fedora CoreOS [here](fcos.md).
 ## Burn the image to an USB disk
 
 ```shell
-INPUT="${HOME}/data/fedora-coreos-38.20230709.3.0-live.x86_64.iso"
-OUTPUT="/dev/disk7"
+INPUT="${HOME}/data/Fedora-Server-dvd.*.iso"
+OUTPUT="/dev/disk6"
 sudo dd if="${INPUT}" of="${OUTPUT}" status=progress bs=1M
 ```
